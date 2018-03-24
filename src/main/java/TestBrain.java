@@ -16,28 +16,34 @@ public class TestBrain {
         Integer iterator = 0;
         do {
             System.out.println("$$You can write /b for exit");
-            System.out.println("$$write to brain (can command):");
+            System.out.println("$$CAN command");
+            System.out.print(">");
             event = scanner.nextLine();
 
             if (event.equals("/sh N")){
                 brain.showElements(Neuron.class);
-                System.out.println("$$write to brain (NOT command):");
+                System.out.println("$$NOT command");
+                System.out.print(">");
                 event = scanner.nextLine();
             }else if (event.equals("/sh S")){
                 brain.showElements(Synapse.class);
-                System.out.println("$$write to brain (NOT command):");
+                System.out.println("$$NOT command");
+                System.out.print(">");
                 event = scanner.nextLine();
             }else if(event.equals("/sh")){
                 System.out.println("$$Enter /sh N for show Neurons or /sh S for show Synapses");
-                System.out.println("$$write to brain (NOT command):");
+                System.out.println("$$NOT command");
+                System.out.print(">");;
                 event = scanner.nextLine();
             }else if(event.equals("/S")){
                 showStatuses();
-                System.out.println("$$write to brain (NOT command):");
+                System.out.println("$$NOT command");
+                System.out.print(">");
                 event = scanner.nextLine();
             }else if(event.equals("/h")){
                 System.out.println("/sh show\n/S show Statuses\n/h this output");
-                System.out.println("$$write to brain (NOT command):");
+                System.out.println("$$NOT command");
+                System.out.print(">");;
                 event = scanner.nextLine();
             }
 
@@ -46,6 +52,10 @@ public class TestBrain {
                 brain.newNeuron();
             }
             System.out.println(">>>>Iterator:" + iterator++);
+            System.out.println("$$Brain is right? %OK or %NO");
+            System.out.print(">");
+            event = scanner.nextLine();
+            brain.success(event);
         }while (!event.equals("/b"));
     }
 

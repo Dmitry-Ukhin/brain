@@ -23,7 +23,6 @@ public class Neuron {
             if (synapsesRight.size() > 0) {
                 Random random = new Random();
                 Integer index = random.nextInt(synapsesRight.size());
-//                System.out.println(this.toString() + " synapsesRight " + synapsesRight.toString());
                 counterSignal++;
                 return synapsesRight.get(index);
             }else{

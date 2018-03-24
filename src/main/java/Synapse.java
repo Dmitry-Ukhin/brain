@@ -1,12 +1,19 @@
 public class Synapse {
+    private static Long idCounter = 0L;
+    private Long id;
+
     private Neuron neuronLeft;
     private Neuron neuronRight;
 
     private String data;
 
-    public Synapse(){}
+    public Synapse(){
+        id = idCounter++;
+    }
 
     public Synapse(Neuron neuron, String data){
+        id = idCounter++;
+
         this.data = data;
         this.neuronRight = neuron;
     }
@@ -31,6 +38,10 @@ public class Synapse {
 
     public void setData(String data) {
         this.data = data;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getData(){

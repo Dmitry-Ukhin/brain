@@ -25,7 +25,8 @@ public class Brain {
 
     private Integer counterCalls = 0;
 
-    private String memories = "@";
+    private List<Long> idsSynapses = new ArrayList<Long>();
+    private String memories = "<";
     private String inputEvent;
 
     private List<Neuron> neurons = new ArrayList<Neuron>();
@@ -56,9 +57,13 @@ public class Brain {
         brain.createNeuron();
         brain.createNeuron();
         brain.createNeuron();
+        brain.createNeuron();
+        brain.createNeuron();
 
         brain.createSynapse(brain.getNeuronById(0L), brain.getNeuronById(1L));
         brain.createSynapse(brain.getNeuronById(1L), brain.getNeuronById(2L));
+        brain.createSynapse(brain.getNeuronById(2L), brain.getNeuronById(3L));
+        brain.createSynapse(brain.getNeuronById(3L), brain.getNeuronById(4L));
     }
 
     public void newNeuron(){
@@ -75,7 +80,7 @@ public class Brain {
     public String getMemories(String event){
         counterCalls++;
         inputEvent = event;
-        memories = "@" + neurons.get(0).toString();
+        memories = "<" + neurons.get(0).toString();
         pointerOnNeuron = null;
         Integer status;
         do {
@@ -100,49 +105,45 @@ public class Brain {
         System.out.println();
     }
 
-    private Integer transferSignal(){
+    private Integer transferSignal() {
         Integer status;
         Neuron selectedNeuron;
-        if(pointerOnNeuron != null) {
+        if (pointerOnNeuron != null) {
             selectedNeuron = getNeuronById(pointerOnNeuron.getId());
-        }else{
+        } else {
             selectedNeuron = getNeuronById(0L);
         }
         Synapse synapse;
         if (selectedNeuron != null) {
             selectedNeuron.updateWeight(1);
             synapse = selectedNeuron.chooseSynapse();
-
-
             if (synapse != null) {
+                idsSynapses.add(synapse.getId());
+
+
                 if (synapse.getData() != null) {
-                    if(memories.lastIndexOf(")") > 0) {
+                    if (memories.lastIndexOf(")") > 0) {
                         memories += "--" + synapse.getData() + "-->";
-                    }else{
+                    } else {
                         memories += "--" + synapse.getData() + "-->";
                     }
-                }else{
+                } else {
                     synapse.setData(inputEvent);
                     inputEvent = null;
                     memories += "--" + synapse.getData() + "-->";
                 }
 
                 pointerOnNeuron = synapse.nextNeuron();
-                if (pointerOnNeuron == null){
+                if (pointerOnNeuron == null) {
                     memories += "-->NULL";
                     status = 0;
-                }else{
+                } else {
                     memories += pointerOnNeuron.toString();
                     status = 1;
                 }
-            }else{
-                memories += "-->NULL";
-                status = 0;
-            }
 
 
 
-            if (selectedNeuron.getId() != 2L) {
                 Double weight = (double) selectedNeuron.getCounterSignal() / counterCalls;
                 if (weight > 0) {
                     Random random = new Random();
@@ -176,44 +177,79 @@ public class Brain {
                         } else {
                             status = 1;
                         }
-                    }else{
+                    } else {
                         status = 0;
                     }
                     removeNeuron(selectedNeuron);
                 }
+                return status;
             } else {
-                System.out.println("STATUS: 11");
-            }
-            return status;
-        }else{
-            FileWriter fileOut = null;
-            String out = ">>>>>>>pointerOnNeuron: " + pointerOnNeuron;
-            String neuron;
-            try{
-                fileOut = new FileWriter("logListNeurons.txt");
+                FileWriter fileOut = null;
+                String out = ">>>>>>>pointerOnNeuron: " + pointerOnNeuron;
+                String neuron;
+                try {
+                    fileOut = new FileWriter("logListNeurons.txt");
 
-                for (int i = 0; i < neurons.size(); i++){
-                    neuron = "\ni=" + i + " " + neurons.get(i).toString();
-                    out = out.concat(neuron);
+                    for (int i = 0; i < neurons.size(); i++) {
+                        neuron = "\ni=" + i + " " + neurons.get(i).toString();
+                        out = out.concat(neuron);
+                    }
+                    Date date = new Date();
+                    out = out.concat("\n" + date.toString() + "\n____________");
+
+                    fileOut.write(out);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                } finally {
+                    System.out.println("STATUS: 21");
+                    if (fileOut != null) {
+                        try {
+                            fileOut.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
-                Date date = new Date();
-                out = out.concat("\n" + date.toString() + "\n____________");
+                return 0;
+            }
+        }
+        return 0;
+    }
 
-                fileOut.write(out);
-            }catch (Exception ex){
-                ex.printStackTrace();
-            }finally {
-                System.out.println("STATUS: 21");
-                if (fileOut != null) {
-                    try {
-                        fileOut.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+    public void success(String result){
+        if (result.equals("%OK")){
+            for (Long id : idsSynapses){
+                Synapse synapse = getSynapseById(id);
+                Neuron neuron = null;
+                if (synapse != null) {
+                    neuron = synapse.previousNeuron();
+                }
+                if (neuron != null) {
+                    neuron.addSynapseRight(synapse);
+                }
+            }
+            System.out.println("< +1");
+        }else if(result.equals("%NO")){
+            Integer counter = 0;
+            for (Long id : idsSynapses){
+                Synapse synapse = getSynapseById(id);
+                Neuron neuron = null;
+                if (synapse != null) {
+                    neuron = synapse.previousNeuron();
+                }
+                if (neuron != null) {
+                    List<Synapse> list = neuron.getAllSynapses();
+                    for (Synapse s : list){
+                        if (s == synapse){
+                            counter++;
+                        }
+                    }
+                    if (counter > 1){
+                        neuron.removeSynapseRight(synapse);
                     }
                 }
             }
-
-            return 0;
+            System.out.println("< -1");
         }
     }
 
@@ -244,6 +280,15 @@ public class Brain {
         for (Neuron neuron : neurons){
             if (neuron.getId() == id){
                 return neuron;
+            }
+        }
+        return null;
+    }
+
+    private Synapse getSynapseById(Long id){
+        for (Synapse synapse : synapses){
+            if (synapse.getId() == id){
+                return synapse;
             }
         }
         return null;
