@@ -1,3 +1,5 @@
+package network1;
+
 public class Synapse {
     private static Long idCounter = 0L;
     private Long id;

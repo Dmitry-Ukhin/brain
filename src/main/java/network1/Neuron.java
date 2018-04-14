@@ -1,3 +1,5 @@
+package network1;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -9,7 +11,7 @@ public class Neuron {
     private Integer counterSignal = 0;
 //    private Integer numberOfConnects;
 
-    private Integer weight = 10;
+    private Integer weight = 30;
 
     private List<Synapse> synapsesLeft = new ArrayList<Synapse>();
     private List<Synapse> synapsesRight = new ArrayList<Synapse>();
@@ -17,6 +19,7 @@ public class Neuron {
     public Neuron(){
         this.id = idCounter++;
     }
+
 
     public Synapse chooseSynapse(){
         if (synapsesRight != null) {
@@ -85,7 +88,7 @@ public class Neuron {
         if (i == 0){
             weight -= 1;
         }else{
-            weight = 10;
+            weight = 30;
         }
     }
 }

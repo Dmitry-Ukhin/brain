@@ -1,3 +1,5 @@
+package network1;
+
 import java.util.Random;
 import java.util.Scanner;
 
@@ -52,7 +54,7 @@ public class TestBrain {
                 brain.newNeuron();
             }
             System.out.println(">>>>Iterator:" + iterator++);
-            System.out.println("$$Brain is right? %OK or %NO");
+            System.out.println("$$network1.Brain is right? %OK or %NO");
             System.out.print(">");
             event = scanner.nextLine();
             brain.success(event);

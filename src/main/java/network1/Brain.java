@@ -1,3 +1,5 @@
+package network1;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -84,10 +86,12 @@ public class Brain {
         pointerOnNeuron = null;
         Integer status;
         do {
-            update(0);
             status = transferSignal();
             newNeuron();
+
         }while (status != 0);
+        neurons.get(0).updateWeight(1);
+        update(0);
         return memories;
     }
 
